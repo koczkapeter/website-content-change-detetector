@@ -1,6 +1,8 @@
 package website.content.change.detetector;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -17,8 +19,17 @@ public class WebsiteContentChangeDetetector {
 
     public static void main(String[] args) {
         websitesActualContent = downloadWebsiteToLocalVariable();
-        
-        System.out.println(websitesActualContent);
+
+        File lastResultFile = new File("lastResult.html");
+        try {
+            if (!lastResultFile.exists()) {
+                lastResultFile.createNewFile();
+            }
+            FileOutputStream oFile = new FileOutputStream(lastResultFile, false);
+        } catch (Exception e) {
+            System.out.println("Error");
+        }
+
     }
 
     private static String downloadWebsiteToLocalVariable() {
@@ -34,8 +45,8 @@ public class WebsiteContentChangeDetetector {
             br = new BufferedReader(new InputStreamReader(is));
 
             while ((line = br.readLine()) != null) {
-                result+=line;
-                result+="\n";
+                result += line;
+                result += "\n";
             }
         } catch (MalformedURLException mue) {
             mue.printStackTrace();
@@ -50,7 +61,7 @@ public class WebsiteContentChangeDetetector {
                 // nothing to see here
             }
         }
-        
+
         return result;
     }
 
