@@ -2,12 +2,17 @@ package website.content.change.detetector;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -16,18 +21,19 @@ import java.net.URL;
 public class WebsiteContentChangeDetetector {
 
     private static String websitesActualContent = "";
+    private static String websitesOldContent = "";
+    private static File lastResultFile;
 
     public static void main(String[] args) {
         websitesActualContent = downloadWebsiteToLocalVariable();
+        checkIfFileExistsAndCreateIfNot();
+        websitesOldContent = getTheOldContentToString(lastResultFile);
 
-        File lastResultFile = new File("lastResult.html");
-        try {
-            if (!lastResultFile.exists()) {
-                lastResultFile.createNewFile();
-            }
-            FileOutputStream oFile = new FileOutputStream(lastResultFile, false);
-        } catch (Exception e) {
-            System.out.println("Error");
+        if (!websitesActualContent.equals(websitesOldContent)) {
+            System.out.println("Nem egyezik");
+            writeActualContentToOldContentFile(lastResultFile, websitesActualContent);
+        } else {
+            System.out.println("Egyezik");
         }
 
     }
@@ -63,6 +69,50 @@ public class WebsiteContentChangeDetetector {
         }
 
         return result;
+    }
+
+    private static String getTheOldContentToString(File lastResultFile) {
+        BufferedReader reader;
+        try {
+            reader = new BufferedReader(new FileReader(lastResultFile));
+            String line = null;
+            StringBuilder stringBuilder = new StringBuilder();
+            String ls = System.getProperty("line.separator");
+
+            while ((line = reader.readLine()) != null) {
+                stringBuilder.append(line);
+                stringBuilder.append(ls);
+            }
+
+            reader.close();
+            System.out.println(stringBuilder.toString());
+            return stringBuilder.toString();
+        } catch (Exception e) {
+            System.out.println("Hiba");
+        }
+        System.out.println("Hiba");
+        return "";
+    }
+
+    private static void checkIfFileExistsAndCreateIfNot() {
+        lastResultFile = new File("lastResult.html");
+        try {
+            if (!lastResultFile.exists()) {
+                lastResultFile.createNewFile();
+                System.out.println("A fájl nem létezett, ezért létrehoztuk");
+            }
+            FileOutputStream oFile = new FileOutputStream(lastResultFile, false);
+        } catch (Exception e) {
+            System.out.println("Error");
+        }
+    }
+
+    private static void writeActualContentToOldContentFile(File lastResultFile, String websitesActualContent) {
+        try (PrintWriter out = new PrintWriter(lastResultFile)) {
+            out.println(websitesActualContent);
+        }catch(Exception e){
+            System.out.println("Hiba történt az aktuális tartalom elmentésekor");
+        }
     }
 
 }
