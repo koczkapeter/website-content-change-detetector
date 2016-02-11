@@ -21,7 +21,7 @@ import javax.swing.JOptionPane;
 public class WebsiteContentChangeDetetector {
 
     private static final int TIMEINTERVALTOCHECK=1;
-    private static final String website="http://koczkapeter.web.elte.hu/";
+    private static final String website="http://index.hu/";
     
     private static String websitesActualContent = "";
     private static String websitesOldContent = "";
