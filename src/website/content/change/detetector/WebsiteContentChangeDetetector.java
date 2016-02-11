@@ -2,8 +2,6 @@ package website.content.change.detetector;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,8 +9,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -26,9 +22,11 @@ public class WebsiteContentChangeDetetector {
 
     public static void main(String[] args) {
         websitesActualContent = downloadWebsiteToLocalVariable();
+        System.out.println(websitesActualContent);
         checkIfFileExistsAndCreateIfNot();
         websitesOldContent = getTheOldContentToString(lastResultFile);
-
+        System.out.println("- - - - -");
+        System.out.println(websitesOldContent);
         if (!websitesActualContent.equals(websitesOldContent)) {
             System.out.println("Nem egyezik");
             writeActualContentToOldContentFile(lastResultFile, websitesActualContent);
@@ -72,20 +70,20 @@ public class WebsiteContentChangeDetetector {
     }
 
     private static String getTheOldContentToString(File lastResultFile) {
+        
         BufferedReader reader;
         try {
-            reader = new BufferedReader(new FileReader(lastResultFile));
-            String line = null;
+            
+            reader = new BufferedReader(new FileReader(lastResultFile.getName()));
             StringBuilder stringBuilder = new StringBuilder();
             String ls = System.getProperty("line.separator");
-
+            String line = null;
             while ((line = reader.readLine()) != null) {
                 stringBuilder.append(line);
                 stringBuilder.append(ls);
             }
-
             reader.close();
-            System.out.println(stringBuilder.toString());
+            //System.out.println(stringBuilder.toString());
             return stringBuilder.toString();
         } catch (Exception e) {
             System.out.println("Hiba");
@@ -95,13 +93,13 @@ public class WebsiteContentChangeDetetector {
     }
 
     private static void checkIfFileExistsAndCreateIfNot() {
-        lastResultFile = new File("lastResult.html");
+        lastResultFile = new File("lastResult.txt");
         try {
             if (!lastResultFile.exists()) {
                 lastResultFile.createNewFile();
                 System.out.println("A fájl nem létezett, ezért létrehoztuk");
             }
-            FileOutputStream oFile = new FileOutputStream(lastResultFile, false);
+            
         } catch (Exception e) {
             System.out.println("Error");
         }
